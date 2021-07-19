@@ -1,11 +1,12 @@
-
 create table users(
-	id varchar(50) not null primary key,
+	id varchar(50) not null,
     username varchar(50) not null,
     password varchar(250) not null,
     email varchar(50),
     mobile varchar(50) not null,
-    enabled boolean not null);
+    enabled boolean not null,
+    primary key(id, username),
+    unique(username));
     
 create table authorities (
 	id varchar(50) not null primary key,
