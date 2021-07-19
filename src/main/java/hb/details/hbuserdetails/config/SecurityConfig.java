@@ -27,6 +27,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private DataSource datasource;
 
+	@Autowired
+	private MyBasicAuthenticationEntryPoint authenticationEntryPoint;
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication().dataSource(datasource)
@@ -35,12 +38,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.passwordEncoder(new BCryptPasswordEncoder());
 	}
 
+	// FORM Based
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(ADMIN_URL).hasRole(ADMIN_ROLE).antMatchers(COACH_URL)
 				.hasAnyRole(COACH_ROLE, ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
-				.antMatchers("/").permitAll().and().formLogin();
+				.antMatchers("/static/**").permitAll().and().formLogin().permitAll().and().logout().permitAll();
 	}
+	
+	/** BASIC HTTP Based
+	 * @Override protected void configure(HttpSecurity http) throws Exception {
+	 * http.authorizeRequests().antMatchers(ADMIN_URL).hasRole(ADMIN_ROLE).
+	 * antMatchers(COACH_URL) .hasAnyRole(COACH_ROLE,
+	 * ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
+	 * .antMatchers("/static/**").permitAll().and().httpBasic()
+	 * .authenticationEntryPoint(authenticationEntryPoint).and().logout().permitAll(
+	 * ); }
+	 */
 
 	@Bean
 	public PasswordEncoder customPasswordEncoder() {
