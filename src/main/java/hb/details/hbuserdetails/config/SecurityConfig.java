@@ -32,14 +32,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.jdbcAuthentication().dataSource(datasource)
 				.usersByUsernameQuery("select username, password, enabled from users where username=?")
 				.authoritiesByUsernameQuery("select username, authority from authorities where username=?")
-				.passwordEncoder(customPasswordEncoder());
+				.passwordEncoder(new BCryptPasswordEncoder());
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(ADMIN_URL).hasRole(ADMIN_ROLE).antMatchers(COACH_URL)
 				.hasAnyRole(COACH_ROLE, ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
-				.antMatchers("/").permitAll().and().formLogin();
+				/* .antMatchers("/").permitAll() */.and().formLogin();
 	}
 
 	@Bean
