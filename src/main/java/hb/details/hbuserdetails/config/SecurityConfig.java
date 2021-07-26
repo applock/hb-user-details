@@ -14,8 +14,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,25 +37,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.jdbcAuthentication().dataSource(datasource)
 				.usersByUsernameQuery("select username, password, enabled from users where username=?")
 				.authoritiesByUsernameQuery("select username, authority from authorities where username=?")
-				.passwordEncoder(new BCryptPasswordEncoder());
+				.passwordEncoder(customPasswordEncoder());
 	}
 
 	// FORM Based
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(ADMIN_URL).hasRole(ADMIN_ROLE).antMatchers(COACH_URL)
-				.hasAnyRole(COACH_ROLE, ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
-				.antMatchers("/static/**").permitAll().and().formLogin().permitAll().and().logout().permitAll();
-	}
-	
-	/** BASIC HTTP Based
+	/*
 	 * @Override protected void configure(HttpSecurity http) throws Exception {
 	 * http.authorizeRequests().antMatchers(ADMIN_URL).hasRole(ADMIN_ROLE).
 	 * antMatchers(COACH_URL) .hasAnyRole(COACH_ROLE,
 	 * ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
+	 * .antMatchers("/static/**").permitAll().and().formLogin().permitAll().and().
+	 * logout().permitAll(); }
+	 */
+
+	// BASIC HTTP Based
+	/*
+	 * @Override protected void configure(HttpSecurity http) throws Exception {
+	 * http.csrf().disable().authorizeRequests().antMatchers(ADMIN_URL).hasRole(
+	 * ADMIN_ROLE).antMatchers(COACH_URL) .hasAnyRole(COACH_ROLE,
+	 * ADMIN_ROLE).antMatchers(CLIENT_URL).hasAnyRole(CLIENT_ROLE, ADMIN_ROLE)
 	 * .antMatchers("/static/**").permitAll().and().httpBasic()
 	 * .authenticationEntryPoint(authenticationEntryPoint).and().logout().permitAll(
-	 * ); }
+	 * ).and().exceptionHandling()
+	 * .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.
+	 * STATELESS); }
+	 */
+
+
+	/*
+	 * @Override public void configure(WebSecurity web) throws Exception {
+	 * web.ignoring().antMatchers("/favicon.ico", "/resources/**", "/error"); }
 	 */
 
 	@Bean

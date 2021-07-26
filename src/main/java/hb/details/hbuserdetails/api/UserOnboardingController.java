@@ -23,10 +23,11 @@ public class UserOnboardingController {
 
 	@GetMapping("/check")
 	public String sayHi() {
-		//String sql = "select username, password, enabled from users where username=?";
+		// String sql = "select username, password, enabled from users where
+		// username=?";
 		String sql = "select password from users where username=?";
 		return jdbcTemplate.queryForObject(sql, new Object[] { "iman" }, String.class);
-		//return " Hi ";
+		// return " Hi ";
 	}
 
 	@PostMapping("/onboard")
@@ -37,8 +38,8 @@ public class UserOnboardingController {
 		jdbcTemplate.update(sql, new Object[] { req.getUsername(), pass, true });
 
 		String authSql = "INSERT INTO authorities VALUES (?, ?)";
-		Set<Role> s = req.getRole();
-		jdbcTemplate.update(authSql, new Object[] { req.getUsername(), s });
+		String role = null == req.getRole() ? Role.CLIENT.name() : req.getRole().name();
+		jdbcTemplate.update(authSql, new Object[] { req.getUsername(), role });
 
 		return "success";
 	}
